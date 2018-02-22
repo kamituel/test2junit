@@ -212,6 +212,11 @@
 
 (defmethod junit-report :default [_])
 
+(def uncaught-exception-in-test-fixture
+  "<testsuites>
+     <testsuite name=\"Uncaught exception in jUnit wrapper\" errors=\"1\" tests=\"0\" failures=\"0\" time=\"0\"/>
+   </testsuites>")
+
 (defmacro with-junit-output
   "Execute body with modified test-is reporting functions that write
   JUnit-compatible XML output."
@@ -222,5 +227,9 @@
              *depth* 0]
      (t/with-test-out
        (println "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"))
-     (let [result# ~@body]
-       result#)))
+     (try
+       (let [result# ~@body]
+         result#)
+       (catch Exception e#
+         (t/with-test-out (println uncaught-exception-in-test-fixture))
+         {:test 0, :pass 0, :fail 0, :error 1}))))
