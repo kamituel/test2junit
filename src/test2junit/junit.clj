@@ -48,6 +48,7 @@
   :author "Jason Sankey"}
   test2junit.junit
   (:require [clojure.stacktrace :as stack]
+            [clojure.string :as str]
             [clojure.test :as t])
   (:import (java.text SimpleDateFormat)
            (java.util Date)))
@@ -212,10 +213,14 @@
 
 (defmethod junit-report :default [_])
 
-(def uncaught-exception-in-test-fixture
-  "<testsuites>
-     <testsuite name=\"Uncaught exception in jUnit wrapper\" errors=\"1\" tests=\"0\" failures=\"0\" time=\"0\"/>
-   </testsuites>")
+(defn uncaught-exception-in-test-fixture
+  [exception]
+  (str 
+    "<testsuite name=\"Uncaught exception in jUnit wrapper\" errors=\"1\" tests=\"1\" failures=\"0\" time=\"0\">
+      <testcase name=\"Uncaught exception in jUnit wrapper\" classname=\"unknown\" time=\"0\">
+        <error message=\"" (str/replace (.getMessage exception) #"[^a-zA-Z\d-\/:\. \?\&\#]" "?") "\"></error>
+      </testcase>
+    </testsuite>"))
 
 (defmacro with-junit-output
   "Execute body with modified test-is reporting functions that write
@@ -231,5 +236,5 @@
        (let [result# ~@body]
          result#)
        (catch Exception e#
-         (t/with-test-out (println uncaught-exception-in-test-fixture))
+         (t/with-test-out (println (uncaught-exception-in-test-fixture e#)))
          {:test 0, :pass 0, :fail 0, :error 1}))))
