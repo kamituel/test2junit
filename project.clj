@@ -6,9 +6,9 @@
 ;;;   http://opensource.org/licenses/eclipse-1.0.php
 ;;;
 
-(defproject test2junit "1.2.2-bugfix-001"
+(defproject kamituel/test2junit "1.2.2-bugfix-001"
   :description "Leiningen plug-in for emitting test output in JUnit XML format"
-  :url "https://github.com/ruedigergad/test2junit"
+  :url "https://github.com/kamituel/test2junit"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :eval-in-leiningen true
